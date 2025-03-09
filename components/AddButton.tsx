@@ -1,20 +1,27 @@
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
+import { Label } from '@radix-ui/react-label'
+import { BookForm } from './Forms/BookForm'
+import { FolderForm } from './Forms/FolderForm'
 import { Button } from './ui/button'
+import { Input } from './ui/input'
 
 interface AddButtonProps {
   title: string
   description?: string
   icon?: React.ReactNode
+  type: 'book' | 'folder'
 }
 
-export function AddButton({ title, description, icon }: AddButtonProps) {
+export function AddButton({ title, description, icon, type }: AddButtonProps) {
   return (
     <>
       <Sheet>
@@ -33,6 +40,8 @@ export function AddButton({ title, description, icon }: AddButtonProps) {
               {description}
             </SheetDescription>
           </SheetHeader>
+
+          {type === 'book' ? <BookForm /> : <FolderForm />}
         </SheetContent>
       </Sheet>
     </>

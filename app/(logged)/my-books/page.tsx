@@ -11,12 +11,14 @@ export default function Home() {
 
           <div className="flex gap-5">
             <AddButton
+              type="book"
               title="Add Book"
               description="Add a book to your library, you can also select a folder to put it
               in."
               icon={<BookPlus />}
             />
             <AddButton
+              type="folder"
               title="Add Folder"
               description="Create a folder to organize your library."
               icon={<FolderPlus />}
