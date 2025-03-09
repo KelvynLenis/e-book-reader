@@ -19,10 +19,10 @@ export function Folder({ title, children }: FolderProps) {
       <Accordion
         type="single"
         collapsible
-        className="w-fit  rounded-md px-2 py-1"
+        className="w-full rounded-md px-2 py-1 hover:bg-blue-900"
       >
         <AccordionItem value="item-1" className="gap-2 flex flex-col">
-          <AccordionTrigger className="text-xl cursor-pointer hover:text-blue-400 flex items-center p-2 w-96">
+          <AccordionTrigger className="text-xl cursor-pointer hover:text-blue-200 flex items-center p-2 w-96">
             <div className="flex items-center">
               <FolderIcon className="mr-2" />
               {title}
@@ -30,7 +30,7 @@ export function Folder({ title, children }: FolderProps) {
           </AccordionTrigger>
           <AccordionContent className="rounded-md pl-6">
             {children}
-            <Book />
+            {/* <Book /> */}
           </AccordionContent>
         </AccordionItem>
       </Accordion>

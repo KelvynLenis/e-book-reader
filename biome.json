@@ -25,7 +25,8 @@
         "noSvgWithoutTitle": "off"
       },
       "style": {
-        "useSelfClosingElements": "warn"
+        "useSelfClosingElements": "warn",
+        "noNonNullAssertion": "warn"
       },
       "suspicious": {
         "noArrayIndexKey": "info"

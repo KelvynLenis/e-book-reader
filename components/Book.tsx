@@ -1,10 +1,27 @@
+'use client'
+
+import Link from 'next/link'
 import { Button } from './ui/button'
 
-export function Book() {
+interface BookProps extends React.HTMLAttributes<HTMLButtonElement> {
+  title: string
+  fileURL?: string
+  folderId?: string
+  slug?: string
+  currentPage?: number
+  totalPages?: number
+  type?: string
+}
+
+export function Book({ title, ...props }: BookProps) {
   return (
     <>
-      <Button className="cursor-pointer text-lg bg-transparent hover:text-blue-400">
-        09 The High Republic Out of the Shadows
+      <Button
+        {...props}
+        className="justify-start cursor-pointer w-full text-lg bg-transparent rounded-md hover:bg-blue-900 hover:text-blue-200 py-1 pl-1 pr-5"
+        type="button"
+      >
+        {title}
       </Button>
     </>
   )

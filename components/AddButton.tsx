@@ -1,3 +1,5 @@
+'use client'
+
 import {
   Sheet,
   SheetClose,
@@ -8,7 +10,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
+import type { BookType, FolderType } from '@/types'
 import { Label } from '@radix-ui/react-label'
+import { useState } from 'react'
 import { BookForm } from './Forms/BookForm'
 import { FolderForm } from './Forms/FolderForm'
 import { Button } from './ui/button'
@@ -19,13 +23,24 @@ interface AddButtonProps {
   description?: string
   icon?: React.ReactNode
   type: 'book' | 'folder'
+  book?: BookType
+  folder?: FolderType
 }
 
-export function AddButton({ title, description, icon, type }: AddButtonProps) {
+export function AddButton({
+  title,
+  description,
+  icon,
+  type,
+  book,
+  folder,
+}: AddButtonProps) {
+  const [isOpen, setIsOpen] = useState(false)
+
   return (
     <>
-      <Sheet>
-        <SheetTrigger>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild>
           <Button className="bg-blue-500 hover:bg-blue-400 cursor-pointer transition-colors duration-200 ease-in">
             {icon}
             {title}
@@ -41,7 +56,11 @@ export function AddButton({ title, description, icon, type }: AddButtonProps) {
             </SheetDescription>
           </SheetHeader>
 
-          {type === 'book' ? <BookForm /> : <FolderForm />}
+          {type === 'book' ? (
+            <BookForm closeSheet={() => setIsOpen(false)} book={book} />
+          ) : (
+            <FolderForm closeSheet={() => setIsOpen(false)} folder={folder} />
+          )}
         </SheetContent>
       </Sheet>
     </>

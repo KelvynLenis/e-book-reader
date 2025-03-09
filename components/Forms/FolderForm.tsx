@@ -24,7 +24,9 @@ import {
 
 import { Input } from '@/components/ui/input'
 import { ID, databases, storage } from '@/lib/appwrite'
+import type { FolderType } from '@/types'
 import { useRouter } from 'next/navigation'
+import { toast } from 'react-toastify'
 
 const formSchema = z.object({
   title: z.string().min(1, {
@@ -33,9 +35,12 @@ const formSchema = z.object({
   folderId: z.string().optional(),
 })
 
-export function FolderForm() {
-  const router = useRouter()
+interface FolderFormProps {
+  closeSheet: () => void
+  folder?: FolderType
+}
 
+export function FolderForm({ closeSheet, folder }: FolderFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,16 +52,20 @@ export function FolderForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const folderCreated = await databases.createDocument(
-        process.env.NEXT_PUBLIC_DATABASE_ID,
-        process.env.NEXT_PUBLIC_FOLDERS_COLLECTION_ID,
+        process.env.NEXT_PUBLIC_DATABASE_ID!,
+        process.env.NEXT_PUBLIC_FOLDERS_COLLECTION_ID!,
         ID.unique(),
         {
           title: values.title,
           parent_id: values.folderId,
         }
       )
-      router.push('/my-books')
+
+      toast.success('Folder created successfully')
+
+      closeSheet()
     } catch (error) {
+      toast.error('Folder creation failed')
       console.error(error)
     }
   }

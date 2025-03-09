@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { getDocument } from 'pdfjs-dist'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -24,7 +25,21 @@ import {
 
 import { Input } from '@/components/ui/input'
 import { ID, databases, storage } from '@/lib/appwrite'
-import { useRouter } from 'next/navigation'
+import { toast } from 'react-toastify'
+import 'react-pdf/dist/Page/TextLayer.css'
+import 'react-pdf/dist/Page/AnnotationLayer.css'
+
+import { createBook } from '@/functions/books/books-functions'
+import {
+  addBookToFolder,
+  getFolders,
+} from '@/functions/folders/folder-functions'
+import type { BookType, FolderType } from '@/types'
+import { GlobalWorkerOptions } from 'pdfjs-dist'
+import { useEffect, useState } from 'react'
+
+GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.mjs'
 
 const formSchema = z.object({
   file: z.any(),
@@ -32,45 +47,84 @@ const formSchema = z.object({
     message: 'Name is required.',
   }),
   folderId: z.string().optional(),
+  totalPages: z.number().optional(),
 })
 
-export function BookForm() {
-  const router = useRouter()
+interface BookFormProps {
+  closeSheet: () => void
+  book?: BookType
+}
+
+export function BookForm({ closeSheet, book }: BookFormProps) {
+  const [folders, setFolders] = useState<FolderType[]>([])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       file: '',
-      title: '',
-      folderId: '',
+      title: book ? book.title : '',
+      folderId: book ? book.folder_id : '/',
     },
   })
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const fileName = file.name.replace(/\.[^/.]+$/, '')
+      form.setValue('title', fileName)
+
+      const pageCount = await getPageCount(file)
+
+      console.log(pageCount)
+      form.setValue('totalPages', pageCount)
+    }
+  }
+
+  async function getPageCount(file: File): Promise<number> {
+    if (file.type === 'application/pdf') {
+      const arrayBuffer = await file.arrayBuffer()
+      const pdf = await getDocument({ data: arrayBuffer }).promise
+
+      console.log(pdf)
+      return pdf.numPages
+    }
+    return 0 // Default for non-PDF files
+  }
+
+  const fileCreatedId = ''
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const fileCreated = await storage.createFile(
-        process.env.NEXT_PUBLIC_BOOKS_BUCKET_ID,
-        ID.unique(),
-        document.getElementById('uploader')?.files[0]
-      )
+      const createBookAndFolder = async () => {
+        await createBook({ values, fileCreatedId })
+        values.folderId !== '/' && (await addBookToFolder(values.folderId!))
+      }
 
-      const bookCreated = await databases.createDocument(
-        process.env.NEXT_PUBLIC_DATABASE_ID,
-        process.env.NEXT_PUBLIC_BOOKS_COLLECTION_ID,
-        ID.unique(),
-        {
-          file_url: '',
-          title: values.title,
-          type: 'pdf',
-          slug: values.title.toLowerCase().replace(/ /g, '-'),
-          folder_id: values.folderId,
-        }
-      )
-      router.push('/my-books')
+      toast.promise(createBookAndFolder, {
+        pending: 'Uploading book...',
+        success: 'Book uploaded successfully',
+        error: 'Error Uploading book',
+      })
+
+      closeSheet()
     } catch (error) {
+      fileCreatedId &&
+        (await storage.deleteFile(
+          process.env.NEXT_PUBLIC_BOOKS_BUCKET_ID!,
+          fileCreatedId
+        ))
+
       console.error(error)
     }
   }
+
+  useEffect(() => {
+    const foldersResponse = getFolders()
+
+    foldersResponse.then(folders => {
+      setFolders(folders)
+    })
+  }, [])
 
   return (
     <div className="flex bg-zinc-800 w-full items-center justify-center pl-2 rounded-md">
@@ -90,8 +144,12 @@ export function BookForm() {
                     id="uploader"
                     className="bg-zinc-200 text-zinc-950"
                     type="file"
-                    placeholder="Choose file"
+                    // placeholder="Choose a file"
                     {...field}
+                    onChange={e => {
+                      field.onChange(e)
+                      handleFileChange(e)
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -135,6 +193,11 @@ export function BookForm() {
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="/">/</SelectItem>
+                    {folders.map(folder => (
+                      <SelectItem key={folder.$id} value={folder.$id}>
+                        {folder.title}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />
