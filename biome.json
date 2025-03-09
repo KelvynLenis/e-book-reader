@@ -24,14 +24,15 @@
       "a11y": {
         "noSvgWithoutTitle": "off"
       },
+      "style": {
+        "useSelfClosingElements": "warn"
+      },
       "suspicious": {
         "noArrayIndexKey": "info"
       }
     }
   },
   "files": {
-    "ignore": [
-      "node_modules"
-    ]
+    "ignore": ["node_modules"]
   }
 }
