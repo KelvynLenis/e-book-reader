@@ -6,7 +6,7 @@ import { BookPlus, FolderPlus } from 'lucide-react'
 export default function Home() {
   return (
     <>
-      <div className="flex flex-col h-full w-full rounded-md gap-5 p-5">
+      {/* <div className="flex flex-col h-full w-full rounded-md gap-5 p-5">
         <h1 className="text-4xl">My Books</h1>
 
         <div className="flex gap-5">
@@ -27,8 +27,8 @@ export default function Home() {
 
         <span className="w-full h-0.5 bg-zinc-600 opacity-60 rounded-full" />
 
-        <FilesBoard />
-      </div>
+      </div> */}
+      <FilesBoard />
     </>
   )
 }

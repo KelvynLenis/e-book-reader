@@ -3,7 +3,7 @@ import { FilesBoard } from '@/components/FilesBoard'
 import { Folder } from '@/components/Folder'
 import { BookPlus, FolderPlus } from 'lucide-react'
 
-export default function Read() {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <div className="flex flex-col h-full w-full rounded-md gap-5 p-5">
@@ -27,7 +27,7 @@ export default function Read() {
 
         <span className="w-full h-0.5 bg-zinc-600 opacity-60 rounded-full" />
 
-        <FilesBoard />
+        {children}
       </div>
     </>
   )

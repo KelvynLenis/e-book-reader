@@ -52,21 +52,30 @@ export function FilesBoard() {
     isFavourite,
   }: { status?: string; isFavourite?: boolean }) {
     if (status) {
-      toast.promise(updateBook({ ...bookDetails, status }), {
-        pending: `Marking as ${status}...`,
-        success: 'Book updated successfully!',
-        error: 'Error updating book!',
-      })
+      toast.promise(
+        updateBook({
+          ...bookDetails,
+          status: status === 'unread' ? 'read' : status,
+        }),
+        {
+          pending: `Marking as ${status}...`,
+          success: 'Book updated successfully!',
+          error: 'Error updating book!',
+        }
+      )
       return
     }
 
     if (isFavourite) {
       console.log('isFavourite', isFavourite)
-      toast.promise(updateBook({ ...bookDetails, is_favourite: isFavourite }), {
-        pending: 'Marking as favourite...',
-        success: 'Book updated successfully!',
-        error: 'Error updating book!',
-      })
+      toast.promise(
+        updateBook({ ...bookDetails, is_favourite: !isFavourite }),
+        {
+          pending: 'Marking as favourite...',
+          success: 'Book updated successfully!',
+          error: 'Error updating book!',
+        }
+      )
       return
     }
 
@@ -140,7 +149,12 @@ export function FilesBoard() {
                 Mark as read
               </Button>
               <Button
-                onClick={() => handleUpdate({ status: 'reading' })}
+                onClick={() =>
+                  handleUpdate({
+                    status:
+                      bookDetails.status === 'reading' ? 'unread' : 'reading',
+                  })
+                }
                 className="cursor-pointer group bg-amber-400 hover:bg-white hover:text-amber-400 transition-colors duration-200 ease-in"
               >
                 <BookMarked className="text-white group-hover:text-amber-400 transition-colors duration-200 ease-in" />
