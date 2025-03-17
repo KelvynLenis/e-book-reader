@@ -35,11 +35,11 @@ import {
   getFolders,
 } from '@/functions/folders/folder-functions'
 import type { BookType, FolderType } from '@/types'
-import { GlobalWorkerOptions } from 'pdfjs-dist'
+// import { GlobalWorkerOptions } from 'pdfjs-dist'
 import { useEffect, useState } from 'react'
 
-GlobalWorkerOptions.workerSrc =
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.mjs'
+// GlobalWorkerOptions.workerSrc =
+//   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.mjs'
 
 const formSchema = z.object({
   file: z.any(),
@@ -73,23 +73,23 @@ export function BookForm({ closeSheet, book }: BookFormProps) {
       const fileName = file.name.replace(/\.[^/.]+$/, '')
       form.setValue('title', fileName)
 
-      const pageCount = await getPageCount(file)
+      // const pageCount = await getPageCount(file)
 
-      console.log(pageCount)
-      form.setValue('totalPages', pageCount)
+      // console.log(pageCount)
+      // form.setValue('totalPages', pageCount)
     }
   }
 
-  async function getPageCount(file: File): Promise<number> {
-    if (file.type === 'application/pdf') {
-      const arrayBuffer = await file.arrayBuffer()
-      const pdf = await getDocument({ data: arrayBuffer }).promise
+  // async function getPageCount(file: File): Promise<number> {
+  //   if (file.type === 'application/pdf') {
+  //     const arrayBuffer = await file.arrayBuffer()
+  //     const pdf = await getDocument({ data: arrayBuffer }).promise
 
-      console.log(pdf)
-      return pdf.numPages
-    }
-    return 0 // Default for non-PDF files
-  }
+  //     console.log(pdf)
+  //     return pdf.numPages
+  //   }
+  //   return 0 // Default for non-PDF files
+  // }
 
   const fileCreatedId = ''
 

@@ -2,13 +2,17 @@
 import { useState } from 'react'
 import { ReactReader } from 'react-reader'
 
-export function Reader() {
+interface ReaderPDFProps {
+  fileURL: string
+}
+
+export function Reader({ fileURL }: ReaderPDFProps) {
   const [location, setLocation] = useState<string | number>(0)
 
   return (
     <div className="w-[80%] h-[90%]">
       <ReactReader
-        url="/sample2.epub"
+        url={fileURL}
         epubInitOptions={{
           openAs: 'epub',
         }}

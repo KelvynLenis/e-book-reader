@@ -5,14 +5,21 @@ import { Document, Page } from 'react-pdf'
 import { pdfjs } from 'react-pdf'
 import 'react-pdf/dist/Page/TextLayer.css'
 import 'react-pdf/dist/Page/AnnotationLayer.css'
-import { BookCheck, Bookmark, BookmarkCheck, Heart } from 'lucide-react'
+import { Bookmark, BookmarkCheck, Heart } from 'lucide-react'
+
+// pdfjs.GlobalWorkerOptions.workerSrc =
+//   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.min.mjs'
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
   import.meta.url
 ).toString()
 
-export function ReaderPDF() {
+interface ReaderPDFProps {
+  fileURL: string
+}
+
+export function ReaderPDF({ fileURL }: ReaderPDFProps) {
   const [numPages, setNumPages] = useState<number>()
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
@@ -24,7 +31,7 @@ export function ReaderPDF() {
       <div className="w-fit h-[95%] overflow-x-hidden relative">
         <Document
           className="p-0"
-          file="/sample.pdf"
+          file={fileURL}
           onLoadSuccess={onDocumentLoadSuccess}
         >
           {Array.from(new Array(numPages), (el, index) => (

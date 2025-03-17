@@ -18,6 +18,8 @@ import { Input } from '@/components/ui/input'
 import { account } from '@/lib/appwrite'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { toast } from 'react-toastify'
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -53,6 +55,21 @@ export function LoginForm() {
       console.error(error)
     }
   }
+
+  useEffect(() => {
+    const autoLogin = async () => {
+      const session = await account.get()
+      if (session) {
+        router.push('/my-books')
+      }
+    }
+
+    toast.promise(autoLogin, {
+      pending: 'Checking session...',
+      success: 'Session found',
+      error: 'Session not found',
+    })
+  }, [])
 
   return (
     <div className="flex bg-zinc-800 w-fit p-10 rounded-md">

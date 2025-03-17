@@ -2,6 +2,7 @@
 
 import { account } from '@/lib/appwrite'
 import { Book, BookCheck, BookHeart, BookMarked } from 'lucide-react'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Button } from './ui/button'
 
@@ -34,10 +35,12 @@ export function Sidebar() {
 
         <div className="flex flex-col h-full justify-between">
           <div className="flex flex-col gap-5">
-            <span className="w-32 flex gap-1 hover:text-blue-400 cursor-pointer transition-colors duration-200 ease-out">
-              <Book className="text-blue-400" />
-              All
-            </span>
+            <Link href={'/my-books'}>
+              <span className="w-32 flex gap-1 hover:text-blue-400 cursor-pointer transition-colors duration-200 ease-out">
+                <Book className="text-blue-400" />
+                All
+              </span>
+            </Link>
             <span className="w-32 flex gap-1 hover:text-green-400 cursor-pointer transition-colors duration-200 ease-out">
               <BookCheck className="text-green-400" />
               Read

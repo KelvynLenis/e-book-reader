@@ -9,9 +9,12 @@ const bookSchema = z.object({
   $updatedAt: z.string().datetime(),
   current_page: z.number(),
   file_url: z.string().nullable(),
+  file_id: z.string(),
   folder_id: z.string(),
   slug: z.string(),
   title: z.string(),
+  status: z.string(),
+  is_favourite: z.boolean(),
   total_pages: z.number().nullable(),
   type: z.string(),
 })
