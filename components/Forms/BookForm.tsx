@@ -29,7 +29,7 @@ import { toast } from 'react-toastify'
 import 'react-pdf/dist/Page/TextLayer.css'
 import 'react-pdf/dist/Page/AnnotationLayer.css'
 
-import { createBook } from '@/functions/books/books-functions'
+import { createBook, updateBook } from '@/functions/books/books-functions'
 import {
   addBookToFolder,
   getFolders,
@@ -95,12 +95,31 @@ export function BookForm({ closeSheet, book }: BookFormProps) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const createBookAndFolder = async () => {
-        await createBook({ values, fileCreatedId })
-        values.folderId !== '/' && (await addBookToFolder(values.folderId!))
+      if (book) {
+        console.log(values)
+        const updateBookAndAddToFolder = async () => {
+          await updateBook({ values, fileCreatedId, book })
+          values.folderId !== '/' &&
+            (await addBookToFolder(book.$id, values.folderId!))
+        }
+        closeSheet()
+
+        toast.promise(updateBookAndAddToFolder, {
+          pending: 'Updating book...',
+          success: 'Book updated successfully',
+          error: 'Error Updating book',
+        })
+
+        return
       }
 
-      toast.promise(createBookAndFolder, {
+      const createBookAndAddToFolder = async () => {
+        const { $id } = await createBook({ values, fileCreatedId })
+        values.folderId !== '/' &&
+          (await addBookToFolder($id, values.folderId!))
+      }
+
+      toast.promise(createBookAndAddToFolder, {
         pending: 'Uploading book...',
         success: 'Book uploaded successfully',
         error: 'Error Uploading book',

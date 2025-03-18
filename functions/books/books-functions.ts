@@ -77,23 +77,57 @@ export const getBook = async (id: string): Promise<BookType> => {
   return result as BookType
 }
 
-export const updateBook = async (book: BookType): Promise<BookType> => {
+interface editBookValuesProps {
+  values: {
+    title: string
+    totalPages?: number | undefined
+    folderId?: string | undefined
+    file?: any
+  }
+  book: BookType
+  fileCreatedId: string
+}
+
+export const updateBook = async ({
+  values,
+  book,
+  fileCreatedId,
+}: editBookValuesProps): Promise<BookType> => {
   try {
+    if (values.file) {
+      const fileCreated = await storage.updateFile(
+        process.env.NEXT_PUBLIC_BOOKS_BUCKET_ID!,
+        book.file_id,
+        document.getElementById('uploader')!.files[0]
+      )
+
+      fileCreatedId = fileCreated.$id
+
+      const result = await databases.updateDocument(
+        process.env.NEXT_PUBLIC_DATABASE_ID!,
+        process.env.NEXT_PUBLIC_BOOKS_COLLECTION_ID!,
+        book.$id,
+        {
+          title: values.title,
+          type: fileCreated.mimeType.split('/')[1],
+          folder_id: values.folderId,
+          slug: values.title.toLowerCase().replace(/ /g, '-'),
+          file_url: `https://cloud.appwrite.io/v1/storage/buckets/${process.env.NEXT_PUBLIC_BOOKS_BUCKET_ID}/files/${fileCreatedId}/view?project=${process.env.NEXT_PUBLIC_APP_WRITE_PROJECT_ID}&mode=admin`,
+          file_id: fileCreatedId,
+        }
+      )
+
+      return result as BookType
+    }
+
     const result = await databases.updateDocument(
       process.env.NEXT_PUBLIC_DATABASE_ID!,
       process.env.NEXT_PUBLIC_BOOKS_COLLECTION_ID!,
       book.$id,
       {
-        title: book.title,
-        type: book.type,
-        current_page: book.current_page,
-        total_pages: book.total_pages,
-        folder_id: book.folder_id,
-        slug: book.slug,
-        file_url: book.file_url,
-        file_id: book.file_id,
-        status: book.status,
-        is_favourite: book.is_favourite,
+        title: values.title,
+        folder_id: values.folderId,
+        slug: values.title.toLowerCase().replace(/ /g, '-'),
       }
     )
 

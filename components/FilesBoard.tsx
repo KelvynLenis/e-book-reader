@@ -1,6 +1,14 @@
 'use client'
 
 import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
+import {
   deleteBook,
   listBooks,
   updateBook,
@@ -18,6 +26,7 @@ import {
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import { AddButton } from './AddButton'
 import { Book } from './Book'
 import { Folder } from './Folder'
 import { Button } from './ui/button'
@@ -90,7 +99,11 @@ export function FilesBoard() {
     const foldersResponse = getFolders()
 
     foldersResponse.then(folders => {
-      setFolders(folders)
+      const sortedFolders = folders.sort((a, b) =>
+        a.title.localeCompare(b.title)
+      )
+      console.log(sortedFolders)
+      setFolders(sortedFolders)
     })
 
     const booksReponse = listBooks()
@@ -105,7 +118,7 @@ export function FilesBoard() {
     <div className="flex w-full h-full">
       <div className="flex flex-col gap-1 w-1/2">
         {folders.map(folder => (
-          <Folder key={folder.$id} title={folder.title} />
+          <Folder key={folder.$id} folder={folder} />
         ))}
         {books.map(book => (
           <Book
@@ -162,7 +175,7 @@ export function FilesBoard() {
               </Button>
               <Button
                 onClick={() =>
-                  handleUpdate({ isFavourite: !bookDetails.is_favourite })
+                  handleUpdate({ isFavourite: bookDetails.is_favourite })
                 }
                 className="cursor-pointer group bg-red-400 hover:bg-white hover:text-red-400 transition-colors duration-200 ease-in"
               >
@@ -188,9 +201,7 @@ export function FilesBoard() {
                 </span>
               </div>
               <div className="flex flex-col flex-wrap gap-1">
-                <Button className="bg-indigo-500 hover:bg-indigo-500 hover:opacity-50 cursor-pointer transition-colors duration-200 ease-in">
-                  Editar
-                </Button>
+                <AddButton type="book" title="Edit Book" book={bookDetails} />
 
                 <Button
                   onClick={handleDeleteBook}
