@@ -1,6 +1,7 @@
 import { AddButton } from '@/components/AddButton'
 import { FilesBoard } from '@/components/FilesBoard'
 import { Folder } from '@/components/Folder'
+import { TestComponent } from '@/components/TestComponent'
 import { BookPlus, FolderPlus } from 'lucide-react'
 
 export default function Home() {
@@ -29,6 +30,7 @@ export default function Home() {
 
       </div> */}
       <FilesBoard />
+      {/* <TestComponent /> */}
     </>
   )
 }
